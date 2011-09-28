@@ -4,65 +4,28 @@
 	<title>WebGL Globe</title>
 	<meta charset="utf-8">
 	<style type="text/css">
-	html {
-		height: 100%;
-	}
-	body {
-		margin: 0;
-		padding: 0;
-		background: #000000 url(/globe/loading.gif) center center no-repeat;
-		color: #ffffff;
-		font-family: sans-serif;
-		font-size: 13px;
-		line-height: 20px;
-		height: 100%;
-	}
+		html { height: 100%; }
+		body {
+			margin: 0;
+			padding: 0;
+			background: #000000 url(/globe/loading.gif) center center no-repeat;
+			color: #ffffff;
+			font-family: sans-serif;
+			font-size: 13px;
+			line-height: 20px;
+			height: 100%;
+		}
 
-	#info {
-		font-size: 11px;
-		position: absolute;
-		bottom: 5px;
-		background-color: rgba(0,0,0,0.8);
-		border-radius: 3px;
-		right: 10px;
-		padding: 10px;
-	}
-
-	#currentInfo {
-		width: 270px;
-		position: absolute;
-		left: 20px;
-		top: 63px;
-		background-color: rgba(0,0,0,0.2);
-		border-top: 1px solid rgba(255,255,255,0.4);
-		padding: 10px;
-	}
-
-	a {
-		color: #aaa;
-		text-decoration: none;
-	}
-	a:hover {
-		text-decoration: underline;
-	}
-
-	.bull {
-		padding: 0 5px;
-		color: #555;
-	}
-
-	#title {
-		position: absolute;
-		top: 20px;
-		width: 270px;
-		left: 20px;
-		background-color: rgba(0,0,0,0.2);
-		border-radius: 3px;
-		font: 20px Georgia;
-		padding: 10px;
-	}
-
-
+		#title {
+			position: absolute;
+			top: 20px;
+			width: 270px;
+			left: 20px;
+			background-color: rgba(0,0,0,0.2);
+			border-radius: 3px;
+			font: 20px Georgia;
+			padding: 10px;
+		}
 	</style>
 </head>
 <body>
@@ -88,9 +51,11 @@
 	else {
 		var container = document.getElementById('container'),
 			globe     = new DAT.Globe(container),
-			socket    = io.connect('http://nolancaudill.com:1361/');
+			socket    = io.connect('http://nolancaudill.com:1361/'),
+			points    = {},
+			mode      = 10;
 		
-		TWEEN.start();
+		globe.animate();
 		
 		socket.on('connect', function() {
 			socket.emit('subscribe', { events: ['nolansflickrdemo'] });
@@ -104,21 +69,27 @@
 			// Make sure we have the goods
 			if (isNaN(lat) || isNaN(lon)) { return; }
 			
-			console.log('new point', lat, lon, raw);
+			var k = 'l' + lat + 'l' + lon;
+			
+			if (points[k]) {
+				points[k]++;
+				
+				if (points[k] > mode) {
+					mode = points[k];
+				}
+			}
+			else {
+				points[k] = 1;
+			}
+			
+			// console.log('new point', lat, lon, raw);
+			// console.log(points[k], 'of them, mode:', mode);
 		
-			globe.addData([lat, lon, 0.001], {
-				format: 'magnitude',
-				name: 'points',
-				animated: true
+			globe.addData([lat, lon, points[k] / mode / 2], {
+				format: 'magnitude'
 			});
-			
+
 			globe.createPoints();
-			
-			new TWEEN.Tween(globe).to({
-				time: 1
-			}, 500).easing(TWEEN.Easing.Cubic.EaseOut).start();
-			
-			globe.animate();
 		});
 	}
 

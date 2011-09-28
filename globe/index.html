@@ -107,6 +107,7 @@
 	<script type="text/javascript" src="/globe/third-party/Three/Detector.js"></script>
 	<script type="text/javascript" src="/globe/third-party/Tween.js"></script>
 	<script type="text/javascript" src="/globe/globe.js"></script>
+	<script type="text/javascript" src="http://nolancaudill.com:1361/socket.io/socket.io.js"></script>
 	<script type="text/javascript">
 
 	if (!Detector.webgl) {
@@ -117,31 +118,15 @@
 		var container = document.getElementById('container');
 		var globe = new DAT.Globe(container);
 		console.log(globe);
-		var i, tweens = [];
+		var i;
 
 		var settime = function(globe, t) {
 			return function() {
 				new TWEEN.Tween(globe).to({
 					time: t/years.length
 				}, 500).easing(TWEEN.Easing.Cubic.EaseOut).start();
-				
-				var y = document.getElementById('year' + years[t]);
-				if (y.getAttribute('class') === 'year active') {
-					return;
-				}
-				
-				var yy = document.getElementsByClassName('year');
-				for (i = 0; i < yy.length; i++) {
-					yy[i].setAttribute('class','year');
-				}
-				y.setAttribute('class', 'year active');
 			};
 		};
-
-		for (var i = 0; i < years.length; i++) {
-			var y = document.getElementById('year'+years[i]);
-			y.addEventListener('mouseover', settime(globe,i), false);
-		}
 
 		var xhr;
 		TWEEN.start();
@@ -155,7 +140,7 @@
 					var data = JSON.parse(xhr.responseText);
 					window.data = data;
 					for (i = 0; i < data.length; i++) {
-						globe.addData(data[i][1], {
+						globe.addData(data[i][1], { // 
 							format: 'magnitude',
 							name: data[i][0],
 							animated: true
@@ -168,6 +153,29 @@
 			}
 		};
 		xhr.send(null);
+		
+		
+		// var socket = io.connect('http://nolancaudill.com:1361/'),
+		// 	events = ['nolansflickrdemo'];
+		// 
+		// socket.on('connect', function() {
+		// 	socket.emit('subscribe', {
+		// 		events: events
+		// 	});
+		// });
+		// 
+		// socket.on('publish', function(data) {
+		// 	var lat = data.raw['geo:lat'];
+		// 	var lon = data.raw['geo:long'];
+		// 	
+		// 	console.log(data)
+		// 
+		// 	globe.addData(data[i][1], {
+		// 		format: 'magnitude',
+		// 		name: data[i][0],
+		// 		animated: true
+		// 	});
+		// });
 	}
 
 	</script>

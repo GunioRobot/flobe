@@ -13,6 +13,9 @@
 
 var DAT = DAT || {};
 
+// hack: making target global
+var target = {}
+
 DAT.Globe = function(container, colorFn) {
 
   colorFn = colorFn || function(x) {
@@ -78,8 +81,10 @@ DAT.Globe = function(container, colorFn) {
 
   var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
   var rotation = { x: 0, y: 0 },
-      target = { x: Math.PI*3/2, y: Math.PI / 6.0 },
       targetOnDown = { x: 0, y: 0 };
+
+  // hack: making target global
+  target = { x: Math.PI*3/2, y: Math.PI / 6.0 }
 
   var distance = 100000, distanceTarget = 100000;
   var padding = 40;
@@ -307,6 +312,8 @@ DAT.Globe = function(container, colorFn) {
 
     target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
     target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
+
+console.log(target.x)
 
     target.y = target.y > PI_HALF ? PI_HALF : target.y;
     target.y = target.y < - PI_HALF ? - PI_HALF : target.y;

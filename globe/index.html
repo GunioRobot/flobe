@@ -55,14 +55,24 @@
 		Detector.addGetWebGLMessage();
 	}
 	else {
+		function rand(min, max) {
+			return Math.floor(Math.random() * (max - min)) + min;
+		}
+		
 		var container = document.getElementById('container'),
 			globe       = new DAT.Globe(container),
 			socket      = io.connect('http://nolancaudill.com:1361/'),
 			points      = {},
-			mode        = 5,
-			UPPER_LIMIT = 15;
+			total       = 0,
+			UPPER_LIMIT = 17;
 		
 		globe.animate();
+		
+		// Hacky way to make the world spin
+		setInterval(function() {
+			target.x += 0.25;
+			globe.animate();
+		}, 2000)
 		
 		socket.on('connect', function() {
 			socket.emit('subscribe', { events: ['nolansflickrdemo'] });
@@ -71,28 +81,28 @@
 		socket.on('publish', function(data) {
 			var raw = data.raw,
 				lat = Math.round(raw['geo:lat']),
-				lon = Math.round(raw['geo:long']);
+				lon = Math.round(raw['geo:long'])
+				todays_random_number = rand(0.7, 0.9);
 			
 			// Make sure we have the goods
 			if (isNaN(lat) || isNaN(lon)) { return; }
 			
 			var k = 'l' + lat + 'l' + lon;
 			
+			total++;
+			
 			if (points[k]) {
 				points[k]++;
-				
-				if (points[k] > mode && mode < UPPER_LIMIT) {
-					mode = points[k];
-				}
 			}
 			else {
 				points[k] = 1;
 			}
 			
 			// console.log('new point', lat, lon, raw);
-			// console.log(points[k], 'of them, mode:', mode);
+			// console.log('count:', points[k], 'total:', total);
+			// console.log('strength:', points[k] / UPPER_LIMIT, 'decision:', Math.min(points[k] / UPPER_LIMIT, todays_random_number));
 		
-			globe.addData([lat, lon, Math.min(points[k] / mode / 2, 1)], {
+			globe.addData([lat, lon, Math.min(points[k] / UPPER_LIMIT, todays_random_number)], {
 				format: 'magnitude'
 			});
 

@@ -64,15 +64,17 @@
 			socket      = io.connect('http://nolancaudill.com:1361/'),
 			points      = {},
 			total       = 0,
-			UPPER_LIMIT = 17;
+			UPPER_LIMIT = 17,
+			FUDGE,
+			PERCENT_CAP;
 		
 		globe.animate();
 		
 		// Hacky way to make the world spin
-		setInterval(function() {
-			target.x += 0.25;
-			globe.animate();
-		}, 2000)
+		// setInterval(function() {
+		// 	target.x += 4;
+		// 	globe.animate();
+		// }, 10000)
 		
 		socket.on('connect', function() {
 			socket.emit('subscribe', { events: ['nolansflickrdemo'] });
@@ -80,29 +82,33 @@
 		
 		socket.on('publish', function(data) {
 			var raw = data.raw,
-				lat = Math.round(raw['geo:lat']),
-				lon = Math.round(raw['geo:long'])
-				todays_random_number = rand(0.7, 0.9);
+			    lat = Math.round(raw['geo:lat']),
+			    lon = Math.round(raw['geo:long']);
 			
 			// Make sure we have the goods
-			if (isNaN(lat) || isNaN(lon)) { return; }
+			if (isNaN(lat)
+				|| isNaN(lon)
+				|| (lat === 0 && lon === 0))
+			{
+				return;
+			}
 			
 			var k = 'l' + lat + 'l' + lon;
+
+			if (points[k]) { points[k]++;   }
+			else           { points[k] = 1; }
 			
+			FUDGE       = rand(0.9, 1.1);
+			PERCENT_CAP = rand(0.65, 0.75);
+			
+			strength = FUDGE * points[k] / UPPER_LIMIT;
 			total++;
-			
-			if (points[k]) {
-				points[k]++;
-			}
-			else {
-				points[k] = 1;
-			}
-			
+
 			// console.log('new point', lat, lon, raw);
 			// console.log('count:', points[k], 'total:', total);
-			// console.log('strength:', points[k] / UPPER_LIMIT, 'decision:', Math.min(points[k] / UPPER_LIMIT, todays_random_number));
-		
-			globe.addData([lat, lon, Math.min(points[k] / UPPER_LIMIT, todays_random_number)], {
+			// console.log('strength:', points[k] / UPPER_LIMIT, 'decision:', Math.min(points[k] / UPPER_LIMIT, PERCENT_CAP));
+
+			globe.addData([lat, lon, Math.min(strength, PERCENT_CAP)], {
 				format: 'magnitude'
 			});
 

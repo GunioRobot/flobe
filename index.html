@@ -64,13 +64,12 @@
 		}
 		
 		var container = document.getElementById('container'),
-			globe       = new DAT.Globe(container),
-			socket      = io.connect('http://nolancaudill.com:1361/'),
-			points      = {},
-			total       = 0,
-			UPPER_LIMIT = 17,
-			FUDGE,
-			PERCENT_CAP,
+			globe  = new DAT.Globe(container),
+			socket = io.connect('http://nolancaudill.com:1361/'),
+			points = {},
+			total  = 0,
+			STEPS  = 17,
+			FUDGE, LIMIT,
 			
 			DEBUG = false;
 		
@@ -99,17 +98,17 @@
 			if (points[k]) { points[k]++;   }
 			else           { points[k] = 1; }
 			
-			FUDGE       = rand(0.9, 1.1);
-			PERCENT_CAP = rand(0.65, 0.75);
+			FUDGE = rand(0.9, 1.1);
+			LIMIT = rand(0.65, 0.75);
 			
-			strength = FUDGE * points[k] / UPPER_LIMIT;
+			strength = FUDGE * points[k] / STEPS;
 			total++;
 
 			debug('new point', lat, lon, raw);
 			debug('count:', points[k], 'total:', total);
-			debug('strength:', points[k] / UPPER_LIMIT, 'decision:', Math.min(points[k] / UPPER_LIMIT, PERCENT_CAP));
+			debug('strength:', points[k] / STEPS, 'decision:', Math.min(points[k] / STEPS, LIMIT));
 
-			globe.addData([lat, lon, Math.min(strength, PERCENT_CAP)], {
+			globe.addData([lat, lon, Math.min(strength, LIMIT)], {
 				format: 'magnitude'
 			});
 

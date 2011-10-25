@@ -59,6 +59,10 @@
 			return Math.floor(Math.random() * (max - min)) + min;
 		}
 		
+		function debug() {
+			if (DEBUG) console.log.apply(console, arguments);
+		}
+		
 		var container = document.getElementById('container'),
 			globe       = new DAT.Globe(container),
 			socket      = io.connect('http://nolancaudill.com:1361/'),
@@ -66,7 +70,9 @@
 			total       = 0,
 			UPPER_LIMIT = 17,
 			FUDGE,
-			PERCENT_CAP;
+			PERCENT_CAP,
+			
+			DEBUG = false;
 		
 		globe.animate();
 		
@@ -86,12 +92,7 @@
 			    lon = Math.round(raw['geo:long']);
 			
 			// Make sure we have the goods
-			if (isNaN(lat)
-				|| isNaN(lon)
-				|| (lat === 0 && lon === 0))
-			{
-				return;
-			}
+			if (isNaN(lat) || isNaN(lon) || (lat === 0 && lon === 0)) { return; }
 			
 			var k = 'l' + lat + 'l' + lon;
 
@@ -104,9 +105,9 @@
 			strength = FUDGE * points[k] / UPPER_LIMIT;
 			total++;
 
-			// console.log('new point', lat, lon, raw);
-			// console.log('count:', points[k], 'total:', total);
-			// console.log('strength:', points[k] / UPPER_LIMIT, 'decision:', Math.min(points[k] / UPPER_LIMIT, PERCENT_CAP));
+			debug('new point', lat, lon, raw);
+			debug('count:', points[k], 'total:', total);
+			debug('strength:', points[k] / UPPER_LIMIT, 'decision:', Math.min(points[k] / UPPER_LIMIT, PERCENT_CAP));
 
 			globe.addData([lat, lon, Math.min(strength, PERCENT_CAP)], {
 				format: 'magnitude'

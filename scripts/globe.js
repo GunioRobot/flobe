@@ -75,11 +75,11 @@ DAT.Globe = function(container, colorFn) {
 	var overRenderer;
 
 	var imgDir = 'images/';
-
+	
+	var zoomSpeed    = 50;
 	var curZoomSpeed = 0;
-	var zoomSpeed = 50;
 
-	var mouse = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
+	var mouse    = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
 	var rotation = { x: 0, y: 0 },
 	targetOnDown = { x: 0, y: 0 };
 
@@ -93,13 +93,13 @@ DAT.Globe = function(container, colorFn) {
 	function init() {
 
 		container.style.color = '#fff';
-		container.style.font = '13px/20px Arial, sans-serif';
+		container.style.font = '13px/20px Helvetica, sans-serif';
 
 		var shader, uniforms, material;
 		w = container.offsetWidth || window.innerWidth;
 		h = container.offsetHeight || window.innerHeight;
 
-		camera = new THREE.Camera(30, w / h, 1, 10000);
+		camera = new THREE.PerspectiveCamera(30, w / h, 1, 10000);
 		camera.position.z = distance;
 
 		vector = new THREE.Vector3();
@@ -107,14 +107,14 @@ DAT.Globe = function(container, colorFn) {
 		scene = new THREE.Scene();
 		sceneAtmosphere = new THREE.Scene();
 
-		var geometry = new THREE.Sphere(200, 40, 30);
+		var geometry = new THREE.SphereGeometry(200, 40, 30);
 
 		shader = Shaders['earth'];
 		uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
 		uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+'world-black.jpg');
 
-		material = new THREE.MeshShaderMaterial({
+		material = new THREE.ShaderMaterial({
 
 			uniforms: uniforms,
 			vertexShader: shader.vertexShader,
@@ -124,12 +124,12 @@ DAT.Globe = function(container, colorFn) {
 
 		mesh = new THREE.Mesh(geometry, material);
 		mesh.matrixAutoUpdate = false;
-		scene.addObject(mesh);
+		scene.add(mesh);
 
 		shader = Shaders['atmosphere'];
 		uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-		material = new THREE.MeshShaderMaterial({
+		material = new THREE.ShaderMaterial({
 
 			uniforms: uniforms,
 			vertexShader: shader.vertexShader,
@@ -142,12 +142,14 @@ DAT.Globe = function(container, colorFn) {
 		mesh.flipSided = true;
 		mesh.matrixAutoUpdate = false;
 		mesh.updateMatrix();
-		sceneAtmosphere.addObject(mesh);
+		sceneAtmosphere.add(mesh);
 
-		geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, {
-			px: true,
-			nx: true, py: true, ny: true, pz: false, nz: true
-		});
+		// geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, {
+		// 	px: true,
+		// 	nx: true, py: true, ny: true, pz: false, nz: true
+		// });
+		
+		geometry = new THREE.CylinderGeometry( 10, 1, 1, 1 );
 
 		for (var i = 0; i < geometry.vertices.length; i++) {
 
@@ -261,7 +263,7 @@ DAT.Globe = function(container, colorFn) {
 					morphTargets: true
 				}));
 			}
-			scene.addObject(this.points);
+			scene.add(this.points);
 		}
 	}
 
@@ -285,7 +287,7 @@ DAT.Globe = function(container, colorFn) {
 
 		}
 
-		GeometryUtils.merge(subgeo, point);
+		THREE.GeometryUtils.merge(subgeo, point);
 	}
 
 	function onMouseDown(event) {

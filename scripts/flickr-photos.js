@@ -10,14 +10,17 @@ else {
 		if (DEBUG) console.log.apply(console, arguments);
 	}
 	
-	var container = document.getElementById('container'),
-		globe  = new DAT.Globe(container),
-		socket = io.connect('http://nolancaudill.com:1361/'),
-		points = {},
-		STEPS  = 23,
-		FUDGE, LIMIT,
-		
-		DEBUG = true;
+	var globe = new DAT.Globe(document.getElementById('container'), function(x) {
+	    	var c = new THREE.Color();
+	    	c.setHSV( ( 1.0 - (x * 0.5) ), 1.0, (0.7 + (x * 0.3)) );
+	    	return c;
+	    }),
+	    socket = io.connect('http://nolancaudill.com:1361/'),
+	    points = {},
+	    STEPS  = 23,
+	    FUDGE, LIMIT,
+	    
+	    DEBUG = true;
 	
 	globe.animate();
 	
@@ -27,11 +30,11 @@ else {
 	// 	globe.animate();
 	// }, 10000);
 	
-	socket.on('connect', function() {
+	socket.on('connect', function initSocket() {
 		socket.emit('subscribe', { events: ['nolansflickrdemo'] });
 	});
 	
-	socket.on('publish', function(data) {
+	socket.on('publish', function receiveData(data) {
 		var raw = data.raw,
 		    lat = Math.round(raw['geo:lat']),
 		    lon = Math.round(raw['geo:long']),
@@ -44,37 +47,28 @@ else {
 		points[k] = points[k] ? points[k] + 1 : 1;
 	});
 	
-	setInterval(function() {
+	setInterval(function renderData() {
 		var keys = Object.keys(points),
 		    data = [],
-		    i, len, key, ll;
-		
-		debug('examining points')
+		    i, len, key, ll;								debug('examining points');
 		
 		for (i = 0, len = keys.length; i < len; i++) {
 			key = keys[i];
-			ll  = key.split('|');
-			
-			debug('looking at', ll)
+			ll  = key.split('|');							debug('looking at', ll);
 			
 			FUDGE = rand(0.9, 1.1);
 			LIMIT = rand(0.65, 0.75);
 			
-			strength = Math.min(FUDGE * points[key] / STEPS, LIMIT);
-			
-			debug('strength is', strength)
+			strength = Math.min(FUDGE * points[key] / STEPS, LIMIT);		debug('strength is', strength);
 			
 			data.push(ll[0], ll[1], strength);
-		};
-		
-		debug('rendering');
+		};										debug('rendering');
 		
 		// debug('new point', lat, lon, raw);
 		// debug('count:', points[k]);
 		// debug('strength:', points[k] / STEPS, 'decision:', Math.min(points[k] / STEPS, LIMIT));
 		
 		globe.addData(data, { format: 'magnitude' });
-		
 		globe.createPoints();
 	}, 1000);
 }

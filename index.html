@@ -6,14 +6,19 @@
 	<style type="text/css">
 		html { height: 100%; }
 		body {
+			background: black url('images/starfield.jpg') repeat center center;
+			color: white;
+			font: 13px/20px sans-serif;
+			height: 100%;
 			margin: 0;
 			padding: 0;
-			background: black url('images/loading.gif') no-repeat center center;
-			color: white;
-			font-family: sans-serif;
-			font-size: 13px;
-			line-height: 20px;
-			height: 100%;
+			position: relative;
+		}
+		
+		#container {
+			background: transparent url('images/loading.gif') no-repeat center center;
+			position: absolute;
+			top: 0; bottom: 0; left: 0; right: 0;
 		}
 
 		#flickr {

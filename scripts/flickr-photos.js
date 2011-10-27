@@ -20,7 +20,7 @@ else {
 	    STEPS  = 23,
 	    FUDGE, LIMIT,
 	    
-	    DEBUG = true;
+	    DEBUG = false;
 	
 	globe.animate();
 	
@@ -70,5 +70,5 @@ else {
 		
 		globe.addData(data, { format: 'magnitude' });
 		globe.createPoints();
-	}, 1000);
+	}, 500);
 }

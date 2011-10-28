@@ -68,7 +68,9 @@ else {
 		// debug('count:', points[k]);
 		// debug('strength:', points[k] / STEPS, 'decision:', Math.min(points[k] / STEPS, LIMIT));
 		
-		globe.addData(data, { format: 'magnitude' });
-		globe.createPoints();
+		if (data.length) {
+			globe.addData(data, { format: 'magnitude' });
+			globe.createPoints();
+		}
 	}, 500);
 }

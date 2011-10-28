@@ -14,7 +14,7 @@
 var DAT = DAT || {};
 
 // hack: making target global
-var target = {}
+var target = {};
 
 DAT.Globe = function(map, container, colorFn) {
 
@@ -93,56 +93,58 @@ DAT.Globe = function(map, container, colorFn) {
 		w = container.offsetWidth || window.innerWidth;
 		h = container.offsetHeight || window.innerHeight;
 
-		// 1 - Make a camera
+		// Guessing that PerspectiveCamera is the right choice. There are other types.
 		camera = new THREE.PerspectiveCamera(30, w / h, 1, 10000);
 		camera.position.z = distance;
 
+		// Not entirely sure what this is for. Updated during render()
 		vector = new THREE.Vector3();
 
-		// 2 - Make a scene
 		scene = new THREE.Scene();
 		sceneAtmosphere = new THREE.Scene();
 
-		// 3 - Make a shape
+		//
+		// Setup the earth shape
+		//
 		var geometry = new THREE.SphereGeometry(200, 40, 30);
 
 		shader = Shaders['earth'];
 		uniforms = THREE.UniformsUtils.clone(shader.uniforms);
-
 		uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+map+'.jpg');
 
-		// 4 - Make a material
 		material = new THREE.ShaderMaterial({
-
-			uniforms: uniforms,
-			vertexShader: shader.vertexShader,
-			fragmentShader: shader.fragmentShader
-
+			uniforms:		uniforms,
+			vertexShader:	shader.vertexShader,
+			fragmentShader:	shader.fragmentShader
 		});
 
-		// 5 - Mesh the shape and material
 		mesh = new THREE.Mesh(geometry, material);
+		
 		mesh.matrixAutoUpdate = false;
-		// 6 - Add the mesh to the scene
 		scene.add(mesh);
 
+		//
+		// Setup the atmosphere
+		//
 		shader = Shaders['atmosphere'];
 		uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
 		material = new THREE.ShaderMaterial({
-
-			uniforms: uniforms,
-			vertexShader: shader.vertexShader,
-			fragmentShader: shader.fragmentShader
-
+			uniforms:		uniforms,
+			vertexShader:	shader.vertexShader,
+			fragmentShader:	shader.fragmentShader
 		});
 
 		mesh = new THREE.Mesh(geometry, material);
+		
 		mesh.scale.x = mesh.scale.y = mesh.scale.z = 1.1;
 		mesh.flipSided = true;
 		mesh.matrixAutoUpdate = false;
 		mesh.updateMatrix();
 		sceneAtmosphere.add(mesh);
+		
+		//
+		// Begin setting up how to draw bars on the globe
 
 		// geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, {
 		// 	px: true,
@@ -162,8 +164,6 @@ DAT.Globe = function(map, container, colorFn) {
 		renderer.autoClear = false;
 		renderer.setClearColorHex(0x000000, 0.0);
 		renderer.setSize(w, h);
-
-		renderer.domElement.style.position = 'absolute';
 
 		container.appendChild(renderer.domElement);
 

@@ -16,7 +16,7 @@ var DAT = DAT || {};
 // hack: making target global
 var target = {}
 
-DAT.Globe = function(container, colorFn) {
+DAT.Globe = function(map, container, colorFn) {
 
 	colorFn = colorFn || function(x) {
 		var c = new THREE.Color();
@@ -91,11 +91,8 @@ DAT.Globe = function(container, colorFn) {
 	var PI_HALF = Math.PI / 2;
 
 	function init() {
-
-		container.style.color = '#fff';
-		container.style.font = '13px/20px Helvetica, sans-serif';
-
 		var shader, uniforms, material;
+		
 		w = container.offsetWidth || window.innerWidth;
 		h = container.offsetHeight || window.innerHeight;
 
@@ -112,7 +109,7 @@ DAT.Globe = function(container, colorFn) {
 		shader = Shaders['earth'];
 		uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 
-		uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+'world-black.jpg');
+		uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+map+'.jpg');
 
 		material = new THREE.ShaderMaterial({
 

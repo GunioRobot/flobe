@@ -10,7 +10,7 @@ else {
 		if (DEBUG) console.log.apply(console, arguments);
 	}
 	
-	var globe = new DAT.Globe(document.getElementById('container'), function(x) {
+	var globe = new DAT.Globe('world-black', document.getElementById('container'), function(x) {
 	    	var c = new THREE.Color();
 	    	c.setHSV( ( 1.0 - (x * 0.5) ), 1.0, (0.7 + (x * 0.3)) );
 	    	return c;

@@ -69,26 +69,23 @@ DAT.Globe = function(map, container, colorFn) {
 		}
 	};
 
-	var camera, scene, sceneAtmosphere, renderer, w, h;
-	var vector, mesh, atmosphere, point;
-
-	var overRenderer;
-
-	var imgDir = 'images/';
+	var camera, scene, sceneAtmosphere, renderer, w, h,
+		vector, mesh, atmosphere, point,
+		overRenderer,
+		imgDir         = 'images/',
+		zoomSpeed      = 50,
+		curZoomSpeed   = 0,
+		mouse          = { x: 0, y: 0 },
+		mouseOnDown    = { x: 0, y: 0 },
+		rotation       = { x: 0, y: 0 },
+		distance       = 100000,
+		distanceTarget = 100000,
+		padding        = 40,
+		PI_HALF        = Math.PI / 2;
 	
-	var zoomSpeed    = 50;
-	var curZoomSpeed = 0;
-
-	var mouse    = { x: 0, y: 0 }, mouseOnDown = { x: 0, y: 0 };
-	var rotation = { x: 0, y: 0 },
-	targetOnDown = { x: 0, y: 0 };
-
 	// hack: making target global
 	target = { x: Math.PI*3/2, y: Math.PI / 6.0 }
-
-	var distance = 100000, distanceTarget = 100000;
-	var padding = 40;
-	var PI_HALF = Math.PI / 2;
+	targetOnDown = { x: 0, y: 0 };
 
 	function init() {
 		var shader, uniforms, material;

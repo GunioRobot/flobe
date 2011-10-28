@@ -4,6 +4,15 @@ var camera, scene, renderer,
 init();
 animate();
 
+// 1 - Make a camera
+// 2 - Make a scene
+// 3 - Make a shape
+// 4 - Make a material
+// 5 - Mesh the shape and material
+// 6 - Add the mesh to the scene
+// 7 - Output the scene through a renderer
+// 8 - Render the renderer with the scene and camera
+
 function init() {
 	//
 	// Make a new camera, scaled to the window
@@ -51,7 +60,7 @@ function animate() {
 }
 
 //
-// Kicked off by animate()
+// Kicked off by animate(), ties the camera to the scene
 //
 function render() {
 	mesh.rotation.x += 0.01;

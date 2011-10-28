@@ -93,14 +93,17 @@ DAT.Globe = function(map, container, colorFn) {
 		w = container.offsetWidth || window.innerWidth;
 		h = container.offsetHeight || window.innerHeight;
 
+		// 1 - Make a camera
 		camera = new THREE.PerspectiveCamera(30, w / h, 1, 10000);
 		camera.position.z = distance;
 
 		vector = new THREE.Vector3();
 
+		// 2 - Make a scene
 		scene = new THREE.Scene();
 		sceneAtmosphere = new THREE.Scene();
 
+		// 3 - Make a shape
 		var geometry = new THREE.SphereGeometry(200, 40, 30);
 
 		shader = Shaders['earth'];
@@ -108,6 +111,7 @@ DAT.Globe = function(map, container, colorFn) {
 
 		uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+map+'.jpg');
 
+		// 4 - Make a material
 		material = new THREE.ShaderMaterial({
 
 			uniforms: uniforms,
@@ -116,8 +120,10 @@ DAT.Globe = function(map, container, colorFn) {
 
 		});
 
+		// 5 - Mesh the shape and material
 		mesh = new THREE.Mesh(geometry, material);
 		mesh.matrixAutoUpdate = false;
+		// 6 - Add the mesh to the scene
 		scene.add(mesh);
 
 		shader = Shaders['atmosphere'];
@@ -142,18 +148,16 @@ DAT.Globe = function(map, container, colorFn) {
 		// 	px: true,
 		// 	nx: true, py: true, ny: true, pz: false, nz: true
 		// });
-		
 		geometry = new THREE.CylinderGeometry( 10, 1, 1, 1 );
 
 		for (var i = 0; i < geometry.vertices.length; i++) {
-
 			var vertex = geometry.vertices[i];
 			vertex.position.z += 0.5;
-
 		}
 
 		point = new THREE.Mesh(geometry);
 
+		// 7 - Output the scene through a renderer
 		renderer = new THREE.WebGLRenderer({antialias: true});
 		renderer.autoClear = false;
 		renderer.setClearColorHex(0x000000, 0.0);
@@ -183,17 +187,19 @@ DAT.Globe = function(map, container, colorFn) {
 	addData = function(data, opts) {
 		var lat, lng, size, color, i, step, colorFnWrapper;
 
-		opts.animated = opts.animated || false;
+		opts.animated    = opts.animated || false;
 		this.is_animated = opts.animated;
-		opts.format = opts.format || 'magnitude'; // other option is 'legend'
-		// console.log(opts.format);
+		opts.format      = opts.format || 'magnitude'; // other option is 'legend'
+		
 		if (opts.format === 'magnitude') {
 			step = 3;
 			colorFnWrapper = function(data, i) { return colorFn(data[i+2]); }
-		} else if (opts.format === 'legend') {
+		}
+		else if (opts.format === 'legend') {
 			step = 4;
 			colorFnWrapper = function(data, i) { return colorFn(data[i+3]); }
-		} else {
+		}
+		else {
 			throw('error: format not supported: '+opts.format);
 		}
 
@@ -209,9 +215,10 @@ DAT.Globe = function(map, container, colorFn) {
 					addPoint(lat, lng, size, color, this._baseGeometry);
 				}
 			}
-			if(this._morphTargetId === undefined) {
+			if (this._morphTargetId === undefined) {
 				this._morphTargetId = 0;
-			} else {
+			}
+			else {
 				this._morphTargetId += 1;
 			}
 			opts.name = opts.name || 'morphTarget'+this._morphTargetId;
@@ -227,7 +234,8 @@ DAT.Globe = function(map, container, colorFn) {
 		}
 		if (opts.animated) {
 			this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
-		} else {
+		}
+		else {
 			this._baseGeometry = subgeo;
 		}
 
@@ -241,13 +249,12 @@ DAT.Globe = function(map, container, colorFn) {
 					vertexColors: THREE.FaceColors,
 					morphTargets: false
 				}));
-			} else {
+			}
+			else {
 				if (this._baseGeometry.morphTargets.length < 8) {
-					// console.log('t l',this._baseGeometry.morphTargets.length);
 					var padding = 8-this._baseGeometry.morphTargets.length;
-					// console.log('padding', padding);
-					for(var i=0; i<=padding; i++) {
-						// console.log('padding',i);
+
+					for (var i = 0; i <= padding; i++) {
 						this._baseGeometry.morphTargets.push({'name': 'morphPadding'+i, vertices: this._baseGeometry.vertices});
 					}
 				}
@@ -274,8 +281,7 @@ DAT.Globe = function(map, container, colorFn) {
 		point.scale.z = -size;
 		point.updateMatrix();
 
-		var i;
-		for (i = 0; i < point.geometry.faces.length; i++) {
+		for (var i = 0; i < point.geometry.faces.length; i++) {
 
 			point.geometry.faces[i].color = color;
 
@@ -304,13 +310,13 @@ DAT.Globe = function(map, container, colorFn) {
 		mouse.x = - event.clientX;
 		mouse.y = event.clientY;
 
-		var zoomDamp = distance/1000;
+		var zoomDamp = distance / 1000;
 
 		target.x = targetOnDown.x + (mouse.x - mouseOnDown.x) * 0.005 * zoomDamp;
 		target.y = targetOnDown.y + (mouse.y - mouseOnDown.y) * 0.005 * zoomDamp;
 
 		target.y = target.y > PI_HALF ? PI_HALF : target.y;
-		target.y = target.y < - PI_HALF ? - PI_HALF : target.y;
+		target.y = target.y < -PI_HALF ? -PI_HALF : target.y;
 	}
 
 	function onMouseUp(event) {
@@ -337,18 +343,17 @@ DAT.Globe = function(map, container, colorFn) {
 	function onDocumentKeyDown(event) {
 		switch (event.keyCode) {
 			case 38:
-			zoom(100);
-			event.preventDefault();
+				zoom(100);
+				event.preventDefault();
 			break;
 			case 40:
-			zoom(-100);
-			event.preventDefault();
+				zoom(-100);
+				event.preventDefault();
 			break;
 		}
 	}
 
 	function onWindowResize( event ) {
-		// console.log('resize');
 		camera.aspect = window.innerWidth / window.innerHeight;
 		camera.updateProjectionMatrix();
 		renderer.setSize( window.innerWidth, window.innerHeight );
@@ -378,6 +383,7 @@ DAT.Globe = function(map, container, colorFn) {
 
 		vector.copy(camera.position);
 
+		// 8 - Render the renderer with the scene and camera
 		renderer.clear();
 		renderer.render(scene, camera);
 		renderer.render(sceneAtmosphere, camera);

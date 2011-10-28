@@ -147,8 +147,9 @@ DAT.Globe = function(map, container, colorFn) {
 		// Begin setting up how to draw bars on the globe
 
 		// geometry = new THREE.Cube(0.75, 0.75, 1, 1, 1, 1, null, false, {
-		// 	px: true,
-		// 	nx: true, py: true, ny: true, pz: false, nz: true
+		// 	px: true, nx: true,
+		// 	py: true, ny: true,
+		// 	pz: false, nz: true
 		// });
 		geometry = new THREE.CylinderGeometry( 10, 1, 1, 1 );
 

@@ -122,7 +122,7 @@ DAT.Globe = function(map, container, colorFn) {
 		});
 		
 		mesh = new THREE.Mesh( geometry, material );
-		mesh.rotation.x = 0.5;
+		// mesh.rotation.x = 0.5;
 		
 		// The original globe code specified this, this prevents automatically redrawing it at render time. I believe you have to manually poke it to redraw it if this is false.
 		// Not setting this as false for now to allow for automatic animation.
@@ -205,18 +205,18 @@ DAT.Globe = function(map, container, colorFn) {
 		// Direct way to cause rotation, from cube demo
 		mesh.rotation.y += 0.002;
 		
-		// console.log('rotation, x:', rotation.x, 'y:', rotation.y);
-		// console.log('distance:', distance);
-		// console.log('camera position, x:', camera.position.x, 'y:', camera.position.y, 'z:', camera.position.z);
+		console.log('rotation, x:', rotation.x, 'y:', rotation.y);
+		console.log('distance:', distance);
+		console.log('camera position, x:', camera.position.x, 'y:', camera.position.y, 'z:', camera.position.z);
 		
 		// rotation.x += (target.x - rotation.x) * 0.1;
 		// rotation.y += (target.y - rotation.y) * 0.1;
 		// distance   += (distanceTarget - distance) * 0.3 / 100;
-		
+		// 
 		// camera.position.x = distance * Math.sin(rotation.x) * Math.cos(rotation.y);
 		// camera.position.y = distance * Math.sin(rotation.y);
 		// camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
-		
+		// 
 		// vector.copy(camera.position);
 		
 		// console.warn('REDRAWING');
@@ -352,7 +352,7 @@ DAT.Globe = function(map, container, colorFn) {
 		container.addEventListener('mouseup', onMouseUp, false);
 		container.addEventListener('mouseout', onMouseOut, false);
 
-		mouseOnDown.x = - event.clientX;
+		mouseOnDown.x = -(event.clientX);
 		mouseOnDown.y = event.clientY;
 
 		targetOnDown.x = target.x;
@@ -378,6 +378,7 @@ DAT.Globe = function(map, container, colorFn) {
 		container.removeEventListener('mousemove', onMouseMove, false);
 		container.removeEventListener('mouseup', onMouseUp, false);
 		container.removeEventListener('mouseout', onMouseOut, false);
+		
 		container.style.cursor = 'auto';
 	}
 
@@ -397,11 +398,11 @@ DAT.Globe = function(map, container, colorFn) {
 
 	function onDocumentKeyDown(event) {
 		switch (event.keyCode) {
-			case 38:
+			case 38: // up
 				zoom(100);
 				event.preventDefault();
 			break;
-			case 40:
+			case 40: // down
 				zoom(-100);
 				event.preventDefault();
 			break;
@@ -421,32 +422,38 @@ DAT.Globe = function(map, container, colorFn) {
 	this.__defineSetter__('time', function(t) {
 		var validMorphs = [];
 		var morphDict = this.points.morphTargetDictionary;
-		for(var k in morphDict) {
+		
+		for (var k in morphDict) {
 			if (k.indexOf('morphPadding') < 0) {
 				validMorphs.push(morphDict[k]);
 			}
 		}
 		validMorphs.sort();
-		var l = validMorphs.length - 1;
+		
+		var l       = validMorphs.length - 1;
 		var scaledt = t * l + 1;
-		var index = Math.floor(scaledt);
+		var index   = Math.floor(scaledt);
+		
 		for (i = 0; i < validMorphs.length; i++) {
 			this.points.morphTargetInfluences[validMorphs[i]] = 0;
 		}
+		
 		var lastIndex = index - 1;
-		var leftover = scaledt - index;
+		var leftover  = scaledt - index;
+		
 		if (lastIndex >= 0) {
 			this.points.morphTargetInfluences[lastIndex] = 1 - leftover;
 		}
+		
 		this.points.morphTargetInfluences[index] = leftover;
 		this._time = t;
 	});
 
-	this.animate = animate;
-	this.addData = addData;
+	this.animate      = animate;
+	this.addData      = addData;
 	this.createPoints = createPoints;
-	this.renderer = renderer;
-	this.scene = scene;
+	this.renderer     = renderer;
+	this.scene        = scene;
 
 
 	init();

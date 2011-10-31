@@ -6,7 +6,7 @@
 	<style type="text/css">
 		html { height: 100%; }
 		body {
-			background: black url('images/starfield.jpg') repeat center center;
+			background: black url('images/starfield.jpg') repeat left top;
 			color: white;
 			font: 13px/20px sans-serif;
 			height: 100%;
@@ -39,6 +39,15 @@
 			height: 9px;
 			background: url('http://l.yimg.com/g/images/lightbox/en-us/from-yahoo-white.png') no-repeat 0 0;
 		}
+		
+		#credit {
+			position: absolute;
+			left: 5px;
+			bottom: 5px;
+			background: rgba(0,0,0,0.5);
+		}
+		
+		a { color: #FF0084; }
 	</style>
 </head>
 <body>
@@ -47,6 +56,16 @@
 
 	<div id="flickr"></div>
 	<div id="yahoo"></div>
+	
+	<div id="credit">Photo by <a href="http://www.flickr.com/photos/coda/190168058/">Coda, on Flickr</a></div>
+	
+	<script type="text/javascript" charset="utf-8">
+		var DEBUG = true;
+		
+		function debug() {
+			if (DEBUG) console.log.apply(console, arguments);
+		}
+	</script>
 
 	<script type="text/javascript" src="third-party/Three/ThreeWebGL.js"></script>
 	<script type="text/javascript" src="third-party/Three/ThreeExtras.js"></script>

@@ -63,8 +63,8 @@ DAT.Globe = function(map, container, colorFn) {
 	};
 
 	var camera, scene, sceneAtmosphere, renderer, w, h,
-	    vector, mesh, mesh2, atmosphere, point,
-	    overRenderer,
+	    vector, mesh, mesh2, atmosphere, point, overRenderer,
+	    start          = new Date(),
 	    imgDir         = 'images/',
 	    zoomSpeed      = 50,
 	    curZoomSpeed   = 0,
@@ -122,12 +122,13 @@ DAT.Globe = function(map, container, colorFn) {
 		});
 		
 		mesh = new THREE.Mesh( geometry, material );
-		// mesh.rotation.x = 0.5;
+		// mesh.rotation.x = 0.4;
 		
 		// The original globe code specified this, this prevents automatically redrawing it at render time. I believe you have to manually poke it to redraw it if this is false.
 		// Not setting this as false for now to allow for automatic animation.
 		// TODO: make this false and hook up manual redraws
-		// mesh.matrixAutoUpdate = false;
+		mesh.matrixAutoUpdate = false;
+		mesh.updateMatrix();
 		
 		scene.add( mesh );
 		
@@ -202,28 +203,31 @@ DAT.Globe = function(map, container, colorFn) {
 	function render() {
 		zoom(curZoomSpeed);
 		
+		var now = new Date();
+		
 		// Direct way to cause rotation, from cube demo
-		mesh.rotation.y += 0.002;
+		// mesh.rotation.y += 0.002;
 		
-		console.log('rotation, x:', rotation.x, 'y:', rotation.y);
-		console.log('distance:', distance);
-		console.log('camera position, x:', camera.position.x, 'y:', camera.position.y, 'z:', camera.position.z);
+		// debug('rotation, x:', rotation.x, 'y:', rotation.y);
+		// debug('distance:', distance);
+		debug('camera position, x:', camera.position.x, 'y:', camera.position.y, 'z:', camera.position.z);
+		debug('now:', now, 'time delta:', now - start);
 		
-		// rotation.x += (target.x - rotation.x) * 0.1;
-		// rotation.y += (target.y - rotation.y) * 0.1;
-		// distance   += (distanceTarget - distance) * 0.3 / 100;
-		// 
-		// camera.position.x = distance * Math.sin(rotation.x) * Math.cos(rotation.y);
-		// camera.position.y = distance * Math.sin(rotation.y);
-		// camera.position.z = distance * Math.cos(rotation.x) * Math.cos(rotation.y);
-		// 
-		// vector.copy(camera.position);
+		camera.position.x = distance * Math.cos(0.001 * (now - start));
+		camera.position.z = distance * Math.sin(0.001 * (now - start));
 		
-		// console.warn('REDRAWING');
-		// console.log('rotation, x:', rotation.x, 'y:', rotation.y);
-		// console.log('distance:', distance);
-		// console.log('camera position, x:', camera.position.x, 'y:', camera.position.y, 'z:', camera.position.z);
-
+		camera.rotation.y -= 0.017;
+		
+		vector.copy(camera.position);
+		mesh.updateMatrix();
+		
+		// debug('rotation, x:', rotation.x, 'y:', rotation.y);
+		// debug('distance:', distance);
+		debug('camera position, x:', camera.position.x, 'y:', camera.position.y, 'z:', camera.position.z);
+		
+		if (now - start > 1000) {
+			DEBUG = false;
+		}
 		// 8 - The renderer renders the scene and camera
 		renderer.clear();
 		renderer.render(scene, camera);

@@ -82,7 +82,7 @@ DAT.Globe = function(map, container, colorFn) {
 				};
 	
 	// hack: making target global
-	target       = { x: 3.0 * PI_HALF, y: PI_HALF / 3.0 }
+	target       = { x: 3.0 * PI_HALF, y: PI_HALF / 3.0 };
 	targetOnDown = { x: 0, y: 0 };
 
 	function init() {
@@ -113,7 +113,7 @@ DAT.Globe = function(map, container, colorFn) {
 		shader   = Shaders['earth'];
 		uniforms = THREE.UniformsUtils.clone(shader.uniforms);
 		
-		uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir+map+'.jpg');
+		uniforms['texture'].texture = THREE.ImageUtils.loadTexture(imgDir + map + '.jpg');
 		
 		material = new THREE.ShaderMaterial({
 			uniforms:	uniforms,
@@ -122,6 +122,7 @@ DAT.Globe = function(map, container, colorFn) {
 		});
 		
 		mesh = new THREE.Mesh( geometry, material );
+		mesh.rotation.x = 0.5;
 		
 		// The original globe code specified this, this prevents automatically redrawing it at render time. I believe you have to manually poke it to redraw it if this is false.
 		// Not setting this as false for now to allow for automatic animation.
@@ -167,7 +168,6 @@ DAT.Globe = function(map, container, colorFn) {
 
 		point = new THREE.Mesh(geometry);
 		
-
 		//
 		// Setup an output for the scene, scaled to the window
 		// Connect the output's HTML element to the document
@@ -180,12 +180,7 @@ DAT.Globe = function(map, container, colorFn) {
 		container.appendChild( renderer.domElement );
 		
 		container.addEventListener('mousedown', onMouseDown, false);
-
 		container.addEventListener('mousewheel', onMouseWheel, false);
-
-		document.addEventListener('keydown', onDocumentKeyDown, false);
-
-		window.addEventListener('resize', onWindowResize, false);
 
 		container.addEventListener('mouseover', function() {
 			overRenderer = true;
@@ -194,6 +189,9 @@ DAT.Globe = function(map, container, colorFn) {
 		container.addEventListener('mouseout', function() {
 			overRenderer = false;
 		}, false);
+		
+		document.addEventListener('keydown', onDocumentKeyDown, false);
+		window.addEventListener('resize', onWindowResize, false);
 	}
 	
 	function animate() {
@@ -204,9 +202,8 @@ DAT.Globe = function(map, container, colorFn) {
 	function render() {
 		zoom(curZoomSpeed);
 		
-		// For the cube do this...
-		mesh.rotation.x += 0.01;
-		mesh.rotation.y += 0.02;
+		// Direct way to cause rotation, from cube demo
+		mesh.rotation.y += 0.002;
 		
 		// console.log('rotation, x:', rotation.x, 'y:', rotation.y);
 		// console.log('distance:', distance);

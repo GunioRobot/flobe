@@ -62,17 +62,16 @@ DAT.Globe = function(map, container, colorFn) {
 		}
 	};
 
-	var camera, scene, sceneAtmosphere, renderer, w, h,
-	    vector, mesh, mesh2, atmosphere, point, overRenderer,
-	    start          = new Date(),
+	var camera, scene, sceneAtmosphere, renderer, w, h, light,
+	    mesh, atmosphere, point, overRenderer, start,
 	    imgDir         = 'images/',
 	    zoomSpeed      = 50,
 	    curZoomSpeed   = 0,
 	    mouse          = { x: 0, y: 0 },
 	    mouseOnDown    = { x: 0, y: 0 },
 	    rotation       = { x: 0, y: 0 },
-	    distance       = 400,
-	    distanceTarget = 100000, // TODO: this used to match distance, but then I cut distance down to 400. Change it too?
+	    distance       = 450,
+	    distanceTarget = 450,
 	    padding        = 40,
 	    PI_HALF        = Math.PI / 2,
 	    colorFn        = colorFn || function(x) {
@@ -95,16 +94,27 @@ DAT.Globe = function(map, container, colorFn) {
 		// Make a new camera, scaled to the window
 		//
 		camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
-		camera.position.z = distance;
 		
-		// Not entirely sure what this is for. Updated during render()
-		vector = new THREE.Vector3();
+		camera.position.z = distance;	// move back
 
 		//
 		// Make a scene
 		//
 		scene           = new THREE.Scene();
-		sceneAtmosphere = new THREE.Scene();
+		// sceneAtmosphere = new THREE.Scene();
+		
+		// // create a point light
+		// light = new THREE.DirectionalLight( 0xFFFFFF );
+		// 
+		// // set its position
+		// light.position.x = 0;
+		// light.position.y = 0;
+		// light.position.z = 0;
+		// 
+		// light.intensity = 1.5;
+		// 
+		// // add to the scene
+		// scene.add(light);
 
 		//
 		// Setup the earth shape
@@ -122,7 +132,7 @@ DAT.Globe = function(map, container, colorFn) {
 		});
 		
 		mesh = new THREE.Mesh( geometry, material );
-		// mesh.rotation.x = 0.4;
+		mesh.rotation.x = 0.4;
 		
 		// The original globe code specified this, this prevents automatically redrawing it at render time. I believe you have to manually poke it to redraw it if this is false.
 		// Not setting this as false for now to allow for automatic animation.
@@ -178,6 +188,8 @@ DAT.Globe = function(map, container, colorFn) {
 		renderer.setClearColorHex(0x000000, 0.0);
 		renderer.setSize(w, h);
 		
+		start = new Date();
+		
 		container.appendChild( renderer.domElement );
 		
 		container.addEventListener('mousedown', onMouseDown, false);
@@ -203,31 +215,14 @@ DAT.Globe = function(map, container, colorFn) {
 	function render() {
 		zoom(curZoomSpeed);
 		
-		var now = new Date();
-		
-		// Direct way to cause rotation, from cube demo
-		// mesh.rotation.y += 0.002;
-		
-		// debug('rotation, x:', rotation.x, 'y:', rotation.y);
-		// debug('distance:', distance);
-		debug('camera position, x:', camera.position.x, 'y:', camera.position.y, 'z:', camera.position.z);
-		debug('now:', now, 'time delta:', now - start);
-		
-		camera.position.x = distance * Math.cos(0.001 * (now - start));
-		camera.position.z = distance * Math.sin(0.001 * (now - start));
-		
-		camera.rotation.y -= 0.017;
-		
-		vector.copy(camera.position);
+		mesh.rotation.y += 0.02;
 		mesh.updateMatrix();
 		
-		// debug('rotation, x:', rotation.x, 'y:', rotation.y);
-		// debug('distance:', distance);
-		debug('camera position, x:', camera.position.x, 'y:', camera.position.y, 'z:', camera.position.z);
-		
-		if (now - start > 1000) {
-			DEBUG = false;
+		if ('points' in globe) {
+			globe.points.rotation.y += 0.02;
+			globe.points.updateMatrix();
 		}
+		
 		// 8 - The renderer renders the scene and camera
 		renderer.clear();
 		renderer.render(scene, camera);
@@ -235,8 +230,6 @@ DAT.Globe = function(map, container, colorFn) {
 		// The atmosphere is totally obscuring the globe. Leaving this out for now.
 		// TODO: work out why this suddenly obscures everything.
 		// renderer.render(sceneAtmosphere, camera);
-		
-		// debugger;
 	}
 	
 	function zoom(delta) {
@@ -276,23 +269,27 @@ DAT.Globe = function(map, container, colorFn) {
 					addPoint(lat, lng, size, color, this._baseGeometry);
 				}
 			}
+			
 			if (this._morphTargetId === undefined) {
 				this._morphTargetId = 0;
 			}
 			else {
 				this._morphTargetId += 1;
 			}
+			
 			opts.name = opts.name || 'morphTarget'+this._morphTargetId;
 		}
-		var subgeo = new THREE.Geometry();
+		
+		subgeo = new THREE.Geometry();
 		for (i = 0; i < data.length; i += step) {
-			lat = data[i];
-			lng = data[i + 1];
+			lat   = data[i];
+			lng   = data[i + 1];
 			color = colorFnWrapper(data,i);
-			size = data[i + 2];
-			size = size * 200;
+			size  = data[i + 2];
+			size  = size * 200;
 			addPoint(lat, lng, size, color, subgeo);
 		}
+		
 		if (opts.animated) {
 			this._baseGeometry.morphTargets.push({'name': opts.name, vertices: subgeo.vertices});
 		}
@@ -330,8 +327,10 @@ DAT.Globe = function(map, container, colorFn) {
 	}
 
 	function addPoint(lat, lng, size, color, subgeo) {
+		var t = new Date() - start;
+		
 		var phi   = (90 - lat) * Math.PI / 180;
-		var theta = (180 - lng) * Math.PI / 180;
+		var theta = (180 - lng - (t * 0.01)) * Math.PI / 180;
 
 		point.position.x = 200 * Math.sin(phi) * Math.cos(theta);
 		point.position.y = 200 * Math.cos(phi);
@@ -459,9 +458,7 @@ DAT.Globe = function(map, container, colorFn) {
 	this.renderer     = renderer;
 	this.scene        = scene;
 
-
 	init();
 	return this;
-
 };
 

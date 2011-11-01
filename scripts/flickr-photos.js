@@ -18,6 +18,7 @@ else {
 	    socket = io.connect('http://nolancaudill.com:1361/'),
 	    points = {},
 	    STEPS  = 23,
+	    LIMIT  = 0.75,
 	    DEBUG  = false;
 	
 	globe.animate();
@@ -38,9 +39,13 @@ else {
 		k         = lat + '|' + lon;
 		points[k] = points[k] ? points[k] + 1 : 1;
 		
-		strength = Math.min(0.75, 1 - (1 / (0.1 * Math.pow(points[k], 1.2) + 1)));
+		strength = 1 - (1 / (0.1 * Math.pow(points[k], 1.2) + 1));
 		
-		globe.addData([lat, lon, strength], { format: 'magnitude' });
-		globe.createPoints();
+		if (strength <= LIMIT) {
+			strength = Math.min(LIMIT, strength);
+			
+			globe.addData([lat, lon, strength], { format: 'magnitude' });
+			globe.createPoints();
+		}
 	});
 }

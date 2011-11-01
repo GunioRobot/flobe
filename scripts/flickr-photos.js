@@ -1,11 +1,15 @@
+function rand(min, max) {
+	return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function debug() {
+	if (DEBUG) console.log.apply(console, arguments);
+}
+
 if (!Detector.webgl) {
 	Detector.addGetWebGLMessage();
 }
 else {
-	function rand(min, max) {
-		return Math.floor(Math.random() * (max - min)) + min;
-	}
-	
 	var globe = new DAT.Globe('world-black', document.getElementById('container'), function(x) {
 	    	var c = new THREE.Color();
 	    	c.setHSV( ( 1.0 - (x * 0.5) ), 1.0, (0.7 + (x * 0.3)) );
@@ -14,6 +18,7 @@ else {
 	    socket = io.connect('http://nolancaudill.com:1361/'),
 	    points = {},
 	    STEPS  = 23,
+	    DEBUG  = false,
 	    FUDGE, LIMIT;
 	
 	globe.animate();
@@ -57,10 +62,6 @@ else {
 			
 			data.push(ll[0], ll[1], strength);
 		};										// debug('rendering');
-		
-		// debug('new point', lat, lon, raw);
-		// debug('count:', points[k]);
-		// debug('strength:', points[k] / STEPS, 'decision:', Math.min(points[k] / STEPS, LIMIT));
 		
 		if (data.length) {
 			globe.addData(data, { format: 'magnitude' });

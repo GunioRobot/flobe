@@ -37,25 +37,10 @@ else {
 		
 		k         = lat + '|' + lon;
 		points[k] = points[k] ? points[k] + 1 : 1;
+		
+		strength = Math.min(0.75, 1 - (1 / (0.1 * Math.pow(points[k], 1.2) + 1)));
+		
+		globe.addData([lat, lon, strength], { format: 'magnitude' });
+		globe.createPoints();
 	});
-	
-	setInterval(function renderData() {
-		var keys = Object.keys(points),
-		    data = [],
-		    i, len, key, ll;
-		
-		for (i = 0, len = keys.length; i < len; i++) {
-			key = keys[i];
-			ll  = key.split('|');
-			
-			strength = Math.min(rand(0.65, 0.75), 1 - (1 / (0.1 * Math.pow(points[key], 1.2) + 1)));
-			
-			data.push(ll[0], ll[1], strength);
-		}
-		
-		if (data.length) {
-			globe.addData(data, { format: 'magnitude' });
-			globe.createPoints();
-		}
-	}, 500);
 }

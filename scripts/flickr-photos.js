@@ -23,12 +23,6 @@ else {
 	
 	globe.animate();
 	
-	// Hacky way to make the world spin
-	// setInterval(function() {
-	// 	target.x += 4;
-	// 	globe.animate();
-	// }, 10000);
-	
 	socket.on('connect', function initSocket() {
 		socket.emit('subscribe', { events: ['nolansflickrdemo'] });
 	});

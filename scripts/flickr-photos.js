@@ -12,7 +12,7 @@ if (!Detector.webgl) {
 else {
 	var globe = new DAT.Globe('world-black', document.getElementById('container'), function(x) {
 	    	var c = new THREE.Color();
-	    	c.setHSV( ( 1.0 - (x * 0.5) ), 1.0, (0.7 + (x * 0.3)) );
+	    	c.setHSV(0.55 + (x / 2), 1, 0.85 + (x * 0.3));
 	    	return c;
 	    }),
 	    socket = io.connect('http://nolancaudill.com:1361/'),

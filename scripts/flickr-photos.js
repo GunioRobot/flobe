@@ -18,8 +18,7 @@ else {
 	    socket = io.connect('http://nolancaudill.com:1361/'),
 	    points = {},
 	    STEPS  = 23,
-	    DEBUG  = false,
-	    FUDGE, LIMIT;
+	    DEBUG  = false;
 	
 	globe.animate();
 	
@@ -43,19 +42,16 @@ else {
 	setInterval(function renderData() {
 		var keys = Object.keys(points),
 		    data = [],
-		    i, len, key, ll;								// debug('examining points');
+		    i, len, key, ll;
 		
 		for (i = 0, len = keys.length; i < len; i++) {
 			key = keys[i];
-			ll  = key.split('|');							// debug('looking at', ll);
+			ll  = key.split('|');
 			
-			FUDGE = rand(0.9, 1.1);
-			LIMIT = rand(0.65, 0.75);
-			
-			strength = Math.min(FUDGE * points[key] / STEPS, LIMIT);		// debug('strength is', strength);
+			strength = Math.min(rand(0.65, 0.75), 1 - (1 / (0.1 * Math.pow(points[key], 1.2) + 1)));
 			
 			data.push(ll[0], ll[1], strength);
-		};										// debug('rendering');
+		}
 		
 		if (data.length) {
 			globe.addData(data, { format: 'magnitude' });

@@ -11,18 +11,18 @@ if(!Detector.webgl){
 	var globe = new DAT.Globe(container, function(x) {
 		var c = new THREE.Color();
 		c.setHSV( ( 0.6 - ( x * 0.5 ) ), 1.0, 1.0 );
-		
+
 		if (x == 0) {
 			// c.setHSV( 0, 0, 0 );
 		}
 		else {
 			// c.setHSV( 0.8, 1.0, 1.0 );
 		}
-		
+
 		return c;
 	});
 	console.log(globe);
-	
+
 	var i, tweens = [];
 
 	var settime = function(globe, t) {
@@ -73,7 +73,7 @@ if(!Detector.webgl){
 					dojo.forEach(meetings,function(m){
 						m.chapters.push({id: chap.id, lat: chap.lat, lon: chap.lon, mCount: 0});
 					});
-					
+
 					dojo.forEach(chap.events,function(evt){
 						dojo.forEach(meetings,function(m){
 							if(m.year >= evt){
@@ -86,7 +86,7 @@ if(!Detector.webgl){
 								meetingChap.mCount++;
 							}
 						});
-					});					
+					});
 				});
 
 
@@ -110,7 +110,7 @@ if(!Detector.webgl){
 				for (i = 0; i < data.length; i++) {
 					globe.addData(data[i][1], {format: 'magnitude', name: data[i][0], animated: true});
 				}
-				
+
 				globe.createPoints();
 				settime(globe,0)();
 				globe.animate();
@@ -118,7 +118,7 @@ if(!Detector.webgl){
 			error: function(e){
 				console.info(e);
 			},
-			
+
 			preventCache: true,
 			handleAs: 'json'
 		});

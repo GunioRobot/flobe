@@ -11,16 +11,16 @@
 var TWEEN = TWEEN || ( function () {
 	var i, tl, interval, time, fps = 60, autostart = false, tweens = [];
 	return {
-	
+
 		setFPS: function ( f ) {
 			fps = f || 60;
 		},
 		start: function ( f ) {
-			
+
 			if ( arguments.length != 0 ) {
 				this.setFPS( f );
 			}
-			
+
 			interval = setInterval( this.update, 1000 / fps );
 		},
 		stop: function () {
@@ -28,7 +28,7 @@ var TWEEN = TWEEN || ( function () {
 		},
 		setAutostart: function ( value ) {
 			autostart = value;
-			
+
 			if (autostart && !interval) {
 				this.start();
 			}
@@ -70,7 +70,7 @@ var TWEEN = TWEEN || ( function () {
 } )();
 
 TWEEN.Tween = function ( object ) {
-	
+
 	var _object             = object,
 		_valuesStart        = {},
 		_valuesDelta        = {},
@@ -83,7 +83,7 @@ TWEEN.Tween = function ( object ) {
 		_onUpdateCallback   = null,
 		_onCompleteCallback = null;
 
-	
+
 	this.to = function ( properties, duration ) {
 		if ( duration !== null ) {
 			_duration = duration;

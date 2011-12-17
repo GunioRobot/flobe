@@ -126,7 +126,7 @@
 	scene.addLight(ambientLight);
 
 	var plane = new THREE.Mesh(
-		new THREE.CubeGeometry(180, 80, 180), 
+		new THREE.CubeGeometry(180, 80, 180),
 		new THREE.MeshLambertMaterial({color: 0xFFFFFF})
 	);
 	plane.position.y = -40;
@@ -145,10 +145,10 @@
 	var barGraph = new THREE.Object3D();
 	scene.addChild(barGraph);
 
-	var max = grid.reduce(function(s,i){ 
-		return Math.max(s, Math.max.apply(null, i)); 
+	var max = grid.reduce(function(s,i){
+		return Math.max(s, Math.max.apply(null, i));
 	}, grid[0][0]);
-	
+
 	for (var j=0; j<grid.length; j++) {
 		var array = grid[j];
 		for (var i=0; i<array.length; i++) {
@@ -174,13 +174,13 @@
 	camera.position.x = Math.cos(rot)*170;
 	camera.position.z = Math.sin(rot)*170;
 	camera.target.position.y = 0;
-	
+
 	window.onmousedown = function (ev){
 		down = true; sx = ev.clientX; sy = ev.clientY;
 	};
-	
+
 	window.onmouseup = function(){ down = false; };
-	
+
 	window.onmousemove = function(ev) {
 		if (down) {
 			var dx = ev.clientX - sx;
@@ -193,7 +193,7 @@
 			sy += dy;
 		}
 	}
-	
+
 	function animate(t) {
 		if (!paused || t-last < 16) {
 			last = t;
@@ -203,7 +203,7 @@
 		window.requestAnimationFrame(animate, renderer.domElement);
 	};
 	animate(new Date().getTime());
-	
+
 	onmessage = function(ev) {
 		paused = (ev.data == 'pause');
 	};

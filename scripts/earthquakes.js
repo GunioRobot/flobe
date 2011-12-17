@@ -16,7 +16,7 @@ function updateData(){
 				var td1 = data[i+1];
 				var td2 = data[i+2];
 				var add = true;
-				
+
 				for (var x = 0; x < tempData.length; x += 3) {
 					add = true;
 					if (td0 == tempData[x]
@@ -31,7 +31,7 @@ function updateData(){
 					$('#newQuakes').text(newQuakes).css({color:'#66FFFF'}).animate({
 						color:'#FFF'
 					}, 1200);
-					
+
 					tempData.push(td0,td1,td2);
 					td.push(td0,td1,td2);
 					globe.addData(td, {format: 'magnitude'});
@@ -44,7 +44,7 @@ function updateData(){
 			globe.addData(tempData, { format: 'magnitude' });
 			globe.createPoints();
 		}
-	});		
+	});
 
 }
 if (!Detector.webgl) {
@@ -52,7 +52,7 @@ if (!Detector.webgl) {
 }
 else {
 	var container = document.getElementById('container');
-	var xhr;	      
+	var xhr;
 	$('.active').removeClass('active');
 	$('#count200').addClass('active');
 	count = 200;
@@ -63,7 +63,7 @@ else {
 	globe.animate();
 	updateData();
 	if (interval) { clearInterval(interval); }
-	
+
 	interval = setInterval(function(){
 		updateData();
 	},60000);// 3000000);

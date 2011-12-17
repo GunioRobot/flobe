@@ -20,30 +20,30 @@ else {
 	    STEPS  = 23,
 	    LIMIT  = 0.75,
 	    DEBUG  = false;
-	
+
 	globe.animate();
-	
+
 	socket.on('connect', function initSocket() {
 		socket.emit('subscribe', { events: ['nolansflickrdemo'] });
 	});
-	
+
 	socket.on('publish', function receiveData(data) {
 		var raw = data.raw,
 		    lat = Math.round(raw['geo:lat']),
 		    lon = Math.round(raw['geo:long']),
 		    k;
-		
+
 		// Make sure we have the goods
 		if (isNaN(lat) || isNaN(lon) || (lat === 0 && lon === 0)) { return; }
-		
+
 		k         = lat + '|' + lon;
 		points[k] = points[k] ? points[k] + 1 : 1;
-		
+
 		strength = 1 - (1 / (0.1 * Math.pow(points[k], 1.2) + 1));
-		
+
 		if (strength <= LIMIT) {
 			strength = Math.min(LIMIT, strength);
-			
+
 			globe.addData([lat, lon, strength], { format: 'magnitude' });
 			globe.createPoints();
 		}
